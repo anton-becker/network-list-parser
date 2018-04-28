@@ -28,6 +28,7 @@ func main() {
 
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "%s:\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "Program version: %s\n\n", version)
 		fmt.Fprintf(flag.CommandLine.Output(), helpMessage)
 		flag.PrintDefaults()
 	}

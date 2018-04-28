@@ -1,5 +1,6 @@
 package main
 
+const version="1.0"
 const helpMessage string = `This program:
 1) parses text file with set of ip addresses and/or networks,
 2) normalizes them,
