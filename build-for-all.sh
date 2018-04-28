@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 
 TARGETS=" \
-android/386 \
-android/amd64 \
-android/arm \
-android/arm64 \
 darwin/386 \
 darwin/amd64 \
-darwin/arm \
-darwin/arm64 \
 dragonfly/amd64 \
 freebsd/386 \
 freebsd/amd64 \
@@ -41,7 +35,17 @@ windows/386/.exe \
 windows/amd64/.exe \
 "
 
+INVALID_TARGETS=" \
+android/386 \
+android/amd64 \
+android/arm \
+android/arm64 \
+darwin/arm \
+darwin/arm64 \
+"
+
 N=network-list-parser
+VERSION=1.0
 
 for TARGET in ${TARGETS} ; do
     IFS='/' read -a ARR <<< "${TARGET}"
@@ -52,5 +56,5 @@ for TARGET in ${TARGETS} ; do
         EXT=".bin"
     fi
     echo $GOOS $GOARCH
-    go build -o ${N}-${GOOS}-${GOARCH}${EXT} github.com/unsacrificed/network-list-parser
+    GOOS=${GOOS} GOARCH=${GOARCH} go build -o ${N}-${GOOS}-${GOARCH}-${VERSION}${EXT} github.com/unsacrificed/network-list-parser
 done
