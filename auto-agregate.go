@@ -10,10 +10,21 @@ type AutoAggregationSettings struct {
 	LoFakePercent      float64 // 0.2, netCount==2
 	HiFakePercent      float64 // 0.51, netCount>=HiFakePercentNets
 	HiFakePercentNets  int     // 8
-	LogMaxPrefix       uint
+	LogMaxPrefix       int
 
 	// Calculated field
 	k float64
+}
+
+var AutoAggregationDefaultSettings = AutoAggregationSettings{
+	LogMaxPrefix:       23,
+	IntensiveMinPrefix: 24,
+	IntensiveMinNets:   2,
+	IntensiveMaxFake:   128,
+	MaxFake:            1024,
+	LoFakePercent:      0.2,
+	HiFakePercent:      0.51,
+	HiFakePercentNets:  8,
 }
 
 func (s AutoAggregationSettings) Validate() {
@@ -32,7 +43,7 @@ func (s AutoAggregationSettings) Validate() {
 	if s.HiFakePercentNets <= 2 {
 		panic(`invalid "aggregation-hi-fake-percent-nets"`)
 	}
-	if s.LogMaxPrefix > 31 {
+	if s.LogMaxPrefix > 30 || s.LogMaxPrefix < -1 {
 		panic(`invalid "log-aggregation-max-prefix"`)
 	}
 }
@@ -76,7 +87,7 @@ func AutoAggregateDecision(net NETv4, netCount int, ipCount uint64, settings Aut
 
 func AutoAggregate(nets NETv4s, settings AutoAggregationSettings) {
 	// decided
-	// Unable to summarize into "/32" because it is only 1 ip.
+	// Unable to summarize into "/32" because there is only 1 ip.
 	// If normalize does not group into "/31" then this "/31" contains only 1 net and there is no reason to summarize.
 	var decided [31]IPv4
 
@@ -92,7 +103,6 @@ netLoop:
 
 			net := nets[i]
 			net.Prefix = m
-			net.Normalize()
 			decided[m] = net.Last()
 
 			ipCount := nets[i].Count()
@@ -112,11 +122,11 @@ netLoop:
 					decided[m] = net.Last()
 				}
 				net.Prefix = effectiveM
-				net.Normalize()
 			}
+			net.Normalize()
 
 			if AutoAggregateDecision(net, j-i, ipCount, settings) {
-				if net.Prefix <= Prefix(settings.LogMaxPrefix) {
+				if int(net.Prefix) <= settings.LogMaxPrefix {
 					log.Printf("Aggregate %v nets into %v, original IPs %.2f%% (%v), original nets: %v.\n", j-i, net.String(), float32(ipCount)*100/float32(net.Count()), ipCount, nets[i:j].String())
 				}
 				nets[i] = net

@@ -51,11 +51,15 @@ func (n *NETv4) Normalize() {
 }
 
 func (n NETv4) Contains(n1 NETv4) bool {
-	return n.Prefix <= n1.Prefix && n.IP == n1.IP&n.Prefix.Mask()
+	return n.Prefix <= n1.Prefix && n.IP&n.Prefix.Mask() == n1.IP&n.Prefix.Mask()
 }
 
 func (n NETv4) Count() uint64 {
 	return 1 << (32 - n.Prefix)
+}
+
+func (n NETv4) First() IPv4 {
+	return n.IP & n.Prefix.Mask()
 }
 
 func (n NETv4) Last() IPv4 {
