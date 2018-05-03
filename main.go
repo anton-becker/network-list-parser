@@ -76,7 +76,7 @@ func main() {
 		dst = os.Stdout
 	} else {
 		var err error
-		dst, err = os.OpenFile(*destination, os.O_RDWR|os.O_CREATE, 0755)
+		dst, err = os.OpenFile(*destination, os.O_RDWR|os.O_CREATE|O_TRUNC, 0755)
 		if err != nil {
 			panic(err.Error())
 		}
