@@ -45,7 +45,10 @@ darwin/arm64 \
 "
 
 N=network-list-parser
-VERSION=1.0
+PKG=github.com/unsacrificed/network-list-parser
+GO_PATH=`go env GOPATH`
+VERSION_FILE="${GO_PATH}/src/${PKG}/doc.go"
+VERSION=`cat "${VERSION_FILE}" | grep "const version =" | cut -d "\"" -f 2`
 
 for TARGET in ${TARGETS} ; do
     IFS='/' read -a ARR <<< "${TARGET}"
@@ -56,5 +59,5 @@ for TARGET in ${TARGETS} ; do
         EXT=".bin"
     fi
     echo $GOOS $GOARCH
-    GOOS=${GOOS} GOARCH=${GOARCH} go build -o ${N}-${GOOS}-${GOARCH}-${VERSION}${EXT} github.com/unsacrificed/network-list-parser
+    GOOS=${GOOS} GOARCH=${GOARCH} go build -o ${N}-${GOOS}-${GOARCH}-${VERSION}${EXT} ${PKG}
 done
