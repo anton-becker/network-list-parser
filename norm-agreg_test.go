@@ -16,17 +16,18 @@ func TestNormalizeAndAutoAggregate(t *testing.T) {
 
 	origNets := ParseIPs(src)
 	nets := NormalizeIPs(origNets)
-	settings:=AutoAggregationDefaultSettings
-	settings.LogMaxPrefix=32
+	settings := AutoAggregationDefaultSettings
+	settings.LogMaxPrefix = 32
 	AutoAggregate(nets, settings)
 	nets = PackNETs(nets)
 
-	orig: for i := range origNets {
+orig:
+	for i := range origNets {
 		for j := range nets {
-			if nets[j].Contains(origNets[i]){
+			if nets[j].Contains(origNets[i]) {
 				continue orig
 			}
 		}
-		t.Errorf("lost network: %v",origNets[i].String())
+		t.Errorf("lost network: %v", origNets[i].String())
 	}
 }
