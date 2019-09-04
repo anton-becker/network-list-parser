@@ -64,7 +64,7 @@ func main() {
 		AutoAggregate(nets, aaSettings)
 		nets = PackNETs(nets)
 		if *logStatistic {
-			log.Printf("After auto aggregate: %v networks/IPs with %v IPs coverage. Removed %.2v%% records (%v). Add %.2v%% IPs coverage (%v).\n", len(nets), nets.Count(), float32(netsL-len(nets))*100/float32(netsL), netsL-len(nets), float32(nets.Count()-netsC)*100/float32(netsC), nets.Count()-netsC)
+			log.Printf("After auto aggregate: %v networks/IPs with %v IPs coverage. Removed %.2v%% records (%v). Add %.2f%% IPs coverage (%v).\n", len(nets), nets.Count(), float32(netsL-len(nets))*100/float32(netsL), netsL-len(nets), float32(nets.Count()-netsC)*100/float32(netsC), nets.Count()-netsC)
 		}
 	}
 
