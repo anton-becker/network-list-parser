@@ -8,6 +8,44 @@ import (
 	"strings"
 )
 
+func isHex(b uint8) bool {
+	return (b >= '0' && b <= '9') ||
+		(b >= 'a' && b <= 'f')
+}
+
+func ParseV6Word(s string) (word string, i int) {
+	var w string
+	for i < len(s) && i < 4 && isHex(s[i]) {
+		w += string(s[i])
+		i++
+	}
+	word = w
+	return
+}
+
+func ParseIPv6(s string) (ip string, i int) {
+	for j := 0; j < 8; j++ {
+		word, skip := ParseV6Word(s[i:])
+		if skip == 0 {
+			return "", 0
+		}
+		ip += word
+		i += skip
+
+		if j < 7 {
+			if i >= len(s) || s[i] != ':' {
+				return "", 0
+			}
+			i++
+		} else {
+			if i < len(s) && s[i] >= '0' && s[i] <= '9' {
+				return "", 0
+			}
+		}
+	}
+	return
+}
+
 func isD(b uint8) bool { return b >= '0' && b <= '9' }
 
 // Does not check anything after, ParseIPv4 do it.
@@ -120,10 +158,15 @@ func ParseIPsRow(s string) (nets NETv4s, ok bool) {
 			s = strings.TrimSpace(s[1:])
 			net, i := ParseNETv4(s)
 			if i == 0 {
-				return nil, false
+				_, i := ParseIPv6(s)
+				if i == 0 {
+					return nil, false
+				}
+				s = strings.TrimSpace(s[i:])
+			} else {
+				nets = append(nets, net)
+				s = strings.TrimSpace(s[i:])
 			}
-			nets = append(nets, net)
-			s = strings.TrimSpace(s[i:])
 		case ';':
 			return nets, true
 		default:
